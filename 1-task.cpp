@@ -10,18 +10,23 @@ struct statement {
 };
 
 void add(std::ofstream& file, statement& payment) {
-    file << std::endl << payment.name << " " << payment.surname << " " << payment.date << " " << payment.amount;
+    file << payment.name << " " << payment.surname << " " << payment.date << " " << payment.amount << std::endl;
 }
 
 void read(std::ifstream& file, statement& payment) {
     file >> payment.name >> payment.surname >> payment.date >> payment.amount;
-    std::cout << payment.name << " " << payment.surname << " " << payment.date << " " << payment.amount << std::endl;
+    if (payment.name != "0") {
+        std::cout << payment.name << " " << payment.surname << " " << payment.date << " " << payment.amount << std::endl;
+    }
+    else {
+        std::cout << "End of file" << std::endl;
+    }
 }
 
 int main() {
-    statement payment;
     std::string answer = "0";
     while (answer != "-1") {
+        statement payment;
         std::cout << "Choose which command you want to use: ";
         std::cin >> answer;
         if (answer == "add") {
@@ -40,6 +45,7 @@ int main() {
         else if (answer == "read") {
             std::ifstream file("statement.txt");
             while (!file.eof()) {
+                payment.name = "0";
                 read(file, payment);
             }
         }
