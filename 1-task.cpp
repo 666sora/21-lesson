@@ -34,8 +34,17 @@ int main() {
             std::cin >> payment.name;
             std::cout << "Input surname: ";
             std::cin >> payment.surname;
-            std::cout << "Input date: ";
-            std::cin >> payment.date;
+            bool correct = false;
+            do {
+                std::cout << "Input date: ";
+                std::cin >> payment.date;
+                if (payment.date[2] == '.' && payment.date[5] == '.') {
+                    correct = true;
+                }
+                else {
+                    std::cout << "Invalid input" << std::endl;
+                }
+            } while (!correct);
             std::cout << "Input amount of payment: ";
             std::cin >> payment.amount;
             std::ofstream file("statement.txt", std::ios::app);
