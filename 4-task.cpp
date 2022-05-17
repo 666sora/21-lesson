@@ -27,7 +27,7 @@ struct Player {
 struct Enemy {
     char name_field = 'E';
 
-    std::string name_enemy = "Enemy #";
+    std::string name_enemy = "Enemy#";
 
     int health_points = 0;
     int armor_points = 0;
