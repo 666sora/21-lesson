@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstring>
 #include <cstdlib>
 #include <ctime>
 
@@ -27,7 +28,7 @@ struct Player {
 struct Enemy {
     char name_field = 'E';
 
-    std::string name_enemy = "Enemy#";
+    std::string name_enemy = "Enemy #";  
 
     int health_points = 0;
     int armor_points = 0;
@@ -49,34 +50,81 @@ void show_field (char (&field)[40][40]) {
 }
 
 void save (char (&field)[40][40], Player& player, Enemy (&enemy)[5]) {
-    std::ofstream save_data("save.txt");
-    for (int i = 0; i < 40; i++) {
-        for (int j = 0; j < 40; j++) {
-            save_data << field[i][j];
-        }
-        save_data << std::endl;
-    }
-    save_data << player.name_field << " " << player.name_player << " " << player.health_points << " " << player.armor_points << " " 
-        << player.damage << " " << player.x_player_pos << " " << player.y_player_pos << std::endl;
+    std::ofstream save_data("save.bin", std::ios::binary);
+    save_data.write((char*)&field, sizeof(field));
+    
+    save_data.write((char*)&player.name_field, sizeof(player.name_field));
+
+    int len = player.name_player.size() + 1;
+    save_data.write((char*)&len, sizeof(len));
+    save_data.write(player.name_player.c_str(), len);
+
+    save_data.write((char*)&player.health_points, sizeof(player.health_points));
+
+    save_data.write((char*)&player.armor_points, sizeof(player.armor_points));
+
+    save_data.write((char*)&player.damage, sizeof(player.damage));
+
+    save_data.write((char*)&player.x_player_pos, sizeof(player.x_player_pos));
+
+    save_data.write((char*)&player.y_player_pos, sizeof(player.y_player_pos));
+    
     for (int i = 0; i < 5; i++) {
-        save_data << enemy[i].name_field << " " << enemy[i].name_enemy << " " << enemy[i].health_points << " " 
-            << enemy[i].armor_points << " " << enemy[i].damage << " " << enemy[i].x_enemy_pos << " " << enemy[i].y_enemy_pos;
-        if (i != 4) save_data << std::endl;
+
+        save_data.write((char*)&enemy[i].name_field, sizeof(enemy[i].name_field));
+
+        len = enemy[i].name_enemy.size() + 1;
+        save_data.write((char*)&len, sizeof(len));
+        save_data.write(enemy[i].name_enemy.c_str(), len);
+
+        save_data.write((char*)&enemy[i].health_points, sizeof(enemy[i].health_points));
+
+        save_data.write((char*)&enemy[i].armor_points, sizeof(enemy[i].armor_points));
+
+        save_data.write((char*)&enemy[i].damage, sizeof(enemy[i].damage));
+
+        save_data.write((char*)&enemy[i].x_enemy_pos, sizeof(enemy[i].x_enemy_pos));
+
+        save_data.write((char*)&enemy[i].y_enemy_pos, sizeof(enemy[i].y_enemy_pos));
     }
     save_data.close();
 }
 
 void load (char (&field)[40][40], Player& player, Enemy (&enemy)[5]) {
-    std::ifstream load_data("save.txt");
-    for (int i = 0; i < 40; i++) {
-        for (int j = 0; j < 40; j++) {
-            load_data >> field[i][j];
-        }
-    }
-    load_data >> player.name_field >> player.name_player >> player.health_points >> player.armor_points >> player.damage >> player.x_player_pos >> player.y_player_pos;
+    std::ifstream load_data("save.bin", std::ios::binary);
+    load_data.read((char*)&field, sizeof(field));
+
+    load_data.read((char*)&player.name_field, sizeof(player.name_field));
+
+    int len;
+    load_data.read((char*)&len, sizeof(len));
+    load_data.read((char*)(player.name_player.c_str()), len);
+
+    load_data.read((char*)&player.health_points, sizeof(player.health_points));
+
+    load_data.read((char*)&player.armor_points, sizeof(player.armor_points));
+
+    load_data.read((char*)&player.damage, sizeof(player.damage));
+
+    load_data.read((char*)&player.x_player_pos, sizeof(player.x_player_pos));
+
+    load_data.read((char*)&player.y_player_pos, sizeof(player.y_player_pos));
+
     for (int i = 0; i < 5; i++) {
-        load_data >> enemy[i].name_field >> enemy[i].name_enemy >> enemy[i].health_points 
-            >> enemy[i].armor_points >> enemy[i].damage >> enemy[i].x_enemy_pos >> enemy[i].y_enemy_pos;
+        load_data.read((char*)&enemy[i].name_field, sizeof(enemy[i].name_field));
+
+        load_data.read((char*)&len, sizeof(len));
+        load_data.read((char*)(enemy[i].name_enemy.c_str()), len);
+
+        load_data.read((char*)&enemy[i].health_points, sizeof(enemy[i].health_points));
+
+        load_data.read((char*)&enemy[i].armor_points, sizeof(enemy[i].armor_points));
+
+        load_data.read((char*)&enemy[i].damage, sizeof(enemy[i].damage));
+
+        load_data.read((char*)&enemy[i].x_enemy_pos, sizeof(enemy[i].x_enemy_pos));
+
+        load_data.read((char*)&enemy[i].y_enemy_pos, sizeof(enemy[i].y_enemy_pos));
     }
     load_data.close();
 }
